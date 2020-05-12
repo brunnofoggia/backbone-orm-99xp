@@ -13,7 +13,7 @@
     "name": "Bruno Foggia",
     "email": "team@99xp.org"
   },
-  "description": "Micro Service integrator plus advanced validation, formatting and control over proccess possibilities",
+  "description": "Backbone ORM is result of fusion between backbone and sequelize to provide a set of functionalities for business model integrated to ORM",
   "type": "module",
   "homepage": "https://backbone-orm.99xp.org",
   "browser": "lib/backbone-orm-99xp.js",
