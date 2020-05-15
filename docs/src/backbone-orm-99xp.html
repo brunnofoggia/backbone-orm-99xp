@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="dark">
+    <head>
+        <title>backbone-orm-99xp.js</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" media="all" href="/public/stylesheets/normalize.css" />
+        <link rel="stylesheet" media="all" href="../docco.css" />
+        <link rel="stylesheet" media="all" href="https://public.99xp.org/styles/color-modes.css" />
+        <link rel="stylesheet" media="all" href="https://public.99xp.org/styles/design.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="page">
+
+                <div class="header">
+                    <small class="color-modes">
+                        <a href="#" class="color-mode dark" onclick="event.preventDefault(); document.getElementsByTagName('html')[0].classList.add('dark'); document.getElementsByTagName('html')[0].classList.remove('light')">&nbsp;</a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="#" class="color-mode light" onclick="event.preventDefault(); document.getElementsByTagName('html')[0].classList.remove('dark'); document.getElementsByTagName('html')[0].classList.add('light')">&nbsp;</a>
+                    </small>
+                    
+                    <h1>backbone-orm-99xp.js</h1>
+                    
+
+                    
+                </div>
+
+                
+                    
+                    <p>Backbone ORM is result of fusion between <a href="https://backbonejs.org">backbone</a> and 
+<a href="https://sequelize.org/">sequelize</a> to provide a set of functionalities for business models integrated to ORM.
+It includes an integration to provide full featured validations with <a href="https://github.com/brunnofoggia/validate-99xp">validate-99xp</a></p>
+
+                    
+                    
+                    
+                    <h2 id="instructions">Instructions</h2>
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <p>The array entityDefinition may have 2 or 3 items. Same options would’ve been passed to sequelize.define</p>
+<ol>
+<li>model name</li>
+<li>model definition</li>
+<li>model options</li>
+</ol>
+
+                    
+                    
+                    
+                    <p>Before using models it’s mandatory that BackboneORM receives Sequelize connection.
+A good option would be openning a connection before your router were triggered</p>
+
+                    
+                    
+                    
+                    <pre><code>BackboneORM.conn = connection</code></pre>
+                    
+                    
+                    
+                    <h2 id="example">Example</h2>
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <pre><code><span class="hljs-keyword">const</span> EntityDefinition = [<span class="hljs-string">'test'</span>, {
+    <span class="hljs-comment">/* table columns */</span>
+    <span class="hljs-attr">id</span>: {
+        <span class="hljs-attr">type</span>: Sequelize.INTEGER,
+        <span class="hljs-attr">primaryKey</span>: <span class="hljs-literal">true</span>
+    },
+    <span class="hljs-attr">name</span>: Sequelize.STRING,
+    <span class="hljs-attr">age</span>: Sequelize.INTEGER
+}, {
+    <span class="hljs-attr">freezeTableName</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">timestamps</span>: <span class="hljs-literal">false</span>,
+}];
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> bborm.Model.extend({
+    <span class="hljs-attr">entityDefinition</span>: EntityDefinition,
+    <span class="hljs-attr">validations</span>: {
+        <span class="hljs-string">"age"</span>: [[v8n().minLength(<span class="hljs-number">1</span>).maxLength(<span class="hljs-number">3</span>), <span class="hljs-string">'Invalid Age'</span>]]
+    },
+});</code></pre>
+                    
+                    
+                    
+                    <h2 id="code-documented-below">CODE DOCUMENTED BELOW</h2>
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <hr>
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <h2 id="baseline-setup">Baseline setup</h2>
+
+                    
+                    
+                    
+                    
+                    
+                    <div class='highlight'><pre><span class="hljs-keyword">import</span> _ <span class="hljs-keyword">from</span> <span class="hljs-string">'underscore-99xp'</span>;
+<span class="hljs-keyword">import</span> Backbone <span class="hljs-keyword">from</span> <span class="hljs-string">'backbone'</span>;
+<span class="hljs-keyword">import</span> v <span class="hljs-keyword">from</span> <span class="hljs-string">'validate-99xp'</span>;
+
+<span class="hljs-keyword">var</span> BackboneORM = {};</pre></div>
+                    
+                    
+                    
+                    <p>Extended Functionallity for Models and Collections</p>
+
+                    
+                    <div class='highlight'><pre><span class="hljs-keyword">var</span> extendedModel = {</pre></div>
+                    
+                    
+                    
+                    <p>Pré set entity into model instance</p>
+
+                    
+                    <div class='highlight'><pre>    preinitialize() {
+        <span class="hljs-keyword">this</span>.setEntity();
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Load an instance of given class</p>
+
+                    
+                    <div class='highlight'><pre>    <span class="hljs-keyword">set</span><span class="hljs-title">Entity</span>() {
+        <span class="hljs-keyword">var</span> o = _.result(<span class="hljs-keyword">this</span>, <span class="hljs-string">'entityDefinition'</span>) || (BackboneORM.error(<span class="hljs-string">'Entity Definition not found'</span>)),
+            conn = <span class="hljs-keyword">this</span>.getConnection();
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.entity = conn.isDefined(o[<span class="hljs-number">0</span>]) ?
+            conn.model(o[<span class="hljs-number">0</span>]) :
+            conn.define(o[<span class="hljs-number">0</span>], o[<span class="hljs-number">1</span>] || {}, o[<span class="hljs-number">2</span>] || {});
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Retrives connection object from this.conn or BackboneORM.conn</p>
+
+                    
+                    <div class='highlight'><pre>    <span class="hljs-keyword">get</span><span class="hljs-title">Connection</span>() {
+        <span class="hljs-keyword">return</span> _.result(<span class="hljs-keyword">this</span>, <span class="hljs-string">'conn'</span>) || _.result(BackboneORM, <span class="hljs-string">'conn'</span>) || (BackboneORM.error(<span class="hljs-string">'Database connection not set'</span>));
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Customization that redirect calls accordingly to the method asked (read, create, update, patch, delete)</p>
+
+                    
+                    <div class='highlight'><pre>    sync(method, model, o) {
+        model.trigger(<span class="hljs-string">'request'</span>, method, model, o);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[<span class="hljs-string">'sync'</span> + _.capitalize(method)](method, model, o);
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Get row</p>
+
+                    
+                    <div class='highlight'><pre>    syncRead(method, model, o) {</pre></div>
+                    
+                    
+                    
+                    <p>callbacks for success or error. They trigger Backbone default ones</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> success = <span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> {
+            o.success(r.dataValues);
+        };
+        <span class="hljs-keyword">var</span> error = <span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
+            o.error(err);
+        };</pre></div>
+                    
+                    
+                    
+                    <p>build where</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> data = {};
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.id) {
+            data[<span class="hljs-keyword">this</span>.idAttribute] = <span class="hljs-keyword">this</span>.id;
+        } <span class="hljs-keyword">else</span> {
+            data = <span class="hljs-keyword">this</span>.attributes;
+        }</pre></div>
+                    
+                    
+                    
+                    <p>no where no select because this is a model not a collection</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">if</span> (!data) {
+            <span class="hljs-keyword">return</span>;
+        }</pre></div>
+                    
+                    
+                    
+                    <p>run select</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.entity.findOne({
+            <span class="hljs-attr">where</span>: data
+        }).then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> success(r)).catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> error(err));
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Insert row</p>
+
+                    
+                    <div class='highlight'><pre>    syncCreate(method, model, o) {</pre></div>
+                    
+                    
+                    
+                    <p>callbacks for success or error. They trigger Backbone default ones</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> success = <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> {
+            <span class="hljs-keyword">var</span> a = {};
+            <span class="hljs-comment">/*var a = r.dataValues;*/</span>
+            a[model.idAttribute] = r[<span class="hljs-string">'null'</span>];
+            o.success(a);
+        };
+        <span class="hljs-keyword">var</span> error = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+            <span class="hljs-keyword">var</span> errors = [];
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> x <span class="hljs-keyword">in</span> e.errors) {
+                errors.push(e.errors[x].message);
+            }
+
+            o.error([errors, e]);
+        };</pre></div>
+                    
+                    
+                    
+                    <p>remove pk from attributes that will be updated</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> attrs = _.omit(<span class="hljs-keyword">this</span>.attributes, <span class="hljs-keyword">this</span>.idAttribute);</pre></div>
+                    
+                    
+                    
+                    <p>run insert</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.entity.create(attrs)
+            .then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> success(r))
+            .catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> error(e));
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Update row</p>
+
+                    
+                    <div class='highlight'><pre>    syncUpdate(method, model, o) {</pre></div>
+                    
+                    
+                    
+                    <p>callbacks for success or error. They trigger Backbone default ones</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> success = <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> {
+            o.success(r[<span class="hljs-number">0</span>]);
+        };
+        <span class="hljs-keyword">var</span> error = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+            <span class="hljs-keyword">var</span> errors = [];
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> x <span class="hljs-keyword">in</span> e.errors) {
+                errors.push(e.errors[x].message);
+            }
+
+            o.error([errors, e]);
+        };</pre></div>
+                    
+                    
+                    
+                    <p>remove pk from attributes that will be updated</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> attrs = _.omit(<span class="hljs-keyword">this</span>.attributes, <span class="hljs-keyword">this</span>.idAttribute);</pre></div>
+                    
+                    
+                    
+                    <p>build where</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">var</span> _o = {
+            <span class="hljs-attr">where</span>: _.pick(<span class="hljs-keyword">this</span>.attributes, <span class="hljs-keyword">this</span>.idAttribute)
+        };</pre></div>
+                    
+                    
+                    
+                    <p>run update</p>
+
+                    
+                    <div class='highlight'><pre>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.entity.update(attrs, _o)
+            .then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> success(r))
+            .catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> error(e));
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Patch row</p>
+
+                    
+                    <div class='highlight'><pre>    syncPatch(method, model, o) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.syncUpdate(method, model, o);
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Validations list. See <a href="https://github.com/brunnofoggia/validate-99xp">validate-99xp</a></p>
+
+                    
+                    <div class='highlight'><pre>    validations(attrs, options) {
+        <span class="hljs-keyword">return</span> {};
+    },</pre></div>
+                    
+                    
+                    
+                    <p>Dispatcher of validation errors</p>
+
+                    
+                    <div class='highlight'><pre>    validationErrors(err) {
+        <span class="hljs-keyword">this</span>._res.status(<span class="hljs-number">400</span>).send({
+            <span class="hljs-attr">title</span>: <span class="hljs-string">'Invalid Data'</span>,
+            <span class="hljs-attr">errors</span>: err
+        });
+    }
+};</pre></div>
+                    
+                    
+                    
+                    <p>Extension of Backbone.Model added to custom behaviors</p>
+
+                    
+                    <div class='highlight'><pre>BackboneORM.Model = Backbone.Model.extend(_.extend(_.clone(v), extendedModel));
+
+BackboneORM.error = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">msg</span>) </span>{
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(msg);
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> BackboneORM;</pre></div>
+                    
+                    
+                    <div class="fleur">h</div>
+            </div>
+        </div>
+    </body>
+</html>
