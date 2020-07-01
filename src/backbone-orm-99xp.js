@@ -112,14 +112,6 @@ var extendedModel = {
             a[model.idAttribute] = r['null'];
             o.success(a);
         };
-        var error = (e) => {
-            var errors = [];
-            for (let x in e.errors) {
-                errors.push(e.errors[x].message);
-            }
-
-            o.error([errors, e]);
-        };
 
         // remove pk from attributes that will be updated
         var attrs = _.omit(this.attributes, this.idAttribute);
@@ -133,14 +125,6 @@ var extendedModel = {
         // callbacks for success or error. They trigger Backbone default ones
         var success = (r) => {
             o.success(r[0]);
-        };
-        var error = (e) => {
-            var errors = [];
-            for (let x in e.errors) {
-                errors.push(e.errors[x].message);
-            }
-
-            o.error([errors, e]);
         };
 
         // remove pk from attributes that will be updated
@@ -157,6 +141,19 @@ var extendedModel = {
     // Patch row
     syncPatch(method, model, o) {
         return this.syncUpdate(method, model, o);
+    },
+    // Handle Sync Errors
+    handleSyncError(e) {
+        var errors = [];
+
+        if (_.isArray(e.errors)) {
+            for (let x in e.errors) {
+                errors.push(e.errors[x].message);
+            }
+        } else {
+            errors.push(e.message);
+        }
+        this.trigger('error', e, errors);
     },
     // Validations list. See [validate-99xp](https://github.com/brunnofoggia/validate-99xp)
     validations(attrs, options) {
@@ -175,17 +172,19 @@ var extendedModel = {
         if (_.isArray(c1) && _.isArray(c2)) {
             this.once(c1[0], _.partial(function (c1, c2) {
                 this.off(c2[0], c2[1]);
-                var args = _.clone(arguments);
-                delete args['0'];
-                delete args['1'];
+                
+                var args = _.toArray(arguments);
+                args.shift();args.shift();
+
                 c1[1].apply(null, args);
             }, c1, c2));
 
             this.once(c2[0], _.partial(function (c1, c2) {
                 this.off(c1[0], c1[1]);
-                var args = arguments;
-                delete args['0'];
-                delete args['1'];
+        
+                var args = _.toArray(arguments);
+                args.shift();args.shift();
+
                 c2[1].apply(null, args);
             }, c1, c2));
         }
@@ -229,7 +228,7 @@ var extendedCollection = {
     },
     // find all records accordingly to the conditions
     findAll(where = {}, sc, ec) {
-        typeof ec !== 'function' && (ec = () => {});
+        typeof ec !== 'function' && (ec = () => { });
 
         return this.entity.findAll({
             where: where
@@ -242,9 +241,9 @@ var extendedCollection = {
                 if (--size > 0) { return; }
                 typeof sc === 'function' && sc(this);
             };
-        
-        typeof ec !== 'function' && (ec = () => {});
-        
+
+        typeof ec !== 'function' && (ec = () => { });
+
         for (var x in this.models) {
             var m = this.models[x];
             m.once(['sync', c], ['error', ec]);
