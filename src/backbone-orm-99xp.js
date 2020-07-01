@@ -229,6 +229,8 @@ var extendedCollection = {
     },
     // find all records accordingly to the conditions
     findAll(where = {}, sc, ec) {
+        typeof ec !== 'function' && (ec = () => {});
+
         return this.entity.findAll({
             where: where
         }).then(r => this.parse(r, sc, ec)).catch(err => ec(err));
@@ -238,9 +240,11 @@ var extendedCollection = {
         var size = this.models.length,
             c = () => {
                 if (--size > 0) { return; }
-                sc(this);
+                typeof sc === 'function' && sc(this);
             };
-
+        
+        typeof ec !== 'function' && (ec = () => {});
+        
         for (var x in this.models) {
             var m = this.models[x];
             m.once(['sync', c], ['error', ec]);
