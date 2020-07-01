@@ -81,9 +81,6 @@ var extendedModel = {
         var success = r => {
             o.success(r.dataValues);
         };
-        var error = err => {
-            o.error(err);
-        };
 
         // build where
         var data = {};
@@ -101,7 +98,7 @@ var extendedModel = {
         // run select
         return this.entity.findOne({
             where: data
-        }).then(r => success(r)).catch(err => error(err));
+        }).then(r => success(r)).catch(_.bind(this.handleSyncError, this));
     },
     // Insert row
     syncCreate(method, model, o) {
@@ -118,7 +115,7 @@ var extendedModel = {
         // run insert
         return this.entity.create(attrs)
             .then(r => success(r))
-            .catch(e => error(e));
+            .catch(_.bind(this.handleSyncError, this));
     },
     // Update row
     syncUpdate(method, model, o) {
@@ -136,7 +133,7 @@ var extendedModel = {
         // run update
         return this.entity.update(attrs, _o)
             .then(r => success(r))
-            .catch(e => error(e));
+            .catch(_.bind(this.handleSyncError, this));
     },
     // Patch row
     syncPatch(method, model, o) {
@@ -151,7 +148,7 @@ var extendedModel = {
                 errors.push(e.errors[x].message);
             }
         } else {
-            errors.push(e.message);
+            errors.push(e.message || e);
         }
         this.trigger('error', e, errors);
     },
