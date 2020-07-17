@@ -1,6 +1,6 @@
 {
   "name": "backbone-orm-99xp",
-  "version": "0.6.4",
+  "version": "0.7.2-beta",
   "keywords": [
     "util",
     "functional",
@@ -58,6 +58,6 @@
     "sequelize": "^5.21.9",
     "underscore-99xp": "^1.2.2",
     "v8n-99xp": "^1.0.1",
-    "validate-99xp": "^1.1.1"
+    "validate-99xp": "^1.2.0"
   }
 }

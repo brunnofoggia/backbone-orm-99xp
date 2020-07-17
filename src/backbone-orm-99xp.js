@@ -51,6 +51,26 @@ import v from 'validate-99xp';
 
 var BackboneORM = {};
 
+var extended = {
+    _migration: {alter: true},
+    migration() {
+        var canMigrate = _.result(this, 'canMigrate');
+        if (!canMigrate) {
+            return false;
+        }
+        return this._migration;
+    },
+    syncMigration() {
+        var migration = _.result(this, 'migration');
+        if (!migration) {
+            return;
+        }
+        migration === true && (migration = {});
+
+        return this.entity.sync(migration);
+    },
+};
+
 // Extended Functionallity for Models and Collections
 var extendedModel = {
     // Pré set entity into model instance
@@ -62,9 +82,11 @@ var extendedModel = {
         var o = _.result(this, 'entityDefinition') || (BackboneORM.error('Entity Definition not found')),
             conn = this.getConnection();
 
-        return this.entity = conn.isDefined(o[0]) ?
+        this.entity = conn.isDefined(o[0]) ?
             conn.model(o[0]) :
             conn.define(o[0], o[1] || {}, o[2] || {});
+
+        return this.entity;
     },
     // Retrives connection object from this.conn or BackboneORM.conn
     getConnection() {
@@ -191,7 +213,7 @@ var extendedModel = {
 };
 
 // Extension of Backbone.Model added to custom behaviors
-BackboneORM.Model = Backbone.Model.extend(_.extend(_.clone(v), extendedModel));
+BackboneORM.Model = Backbone.Model.extend(_.extend(_.clone(v), extended, extendedModel));
 
 var extendedCollection = {
     // Pré set entity into collection instance
@@ -207,7 +229,9 @@ var extendedCollection = {
     setEntity() {
         var o = _.result(this, 'entityDefinition') || _.result(this.modelBase, 'entityDefinition') || BackboneORM.error('Entity Definition not found'),
             conn = this.getConnection();
-        return this.entity = conn.isDefined(o[0]) ? conn.model(o[0]) : conn.define(o[0], o[1] || {}, o[2] || {});
+
+        this.entity = conn.isDefined(o[0]) ? conn.model(o[0]) : conn.define(o[0], o[1] || {}, o[2] || {});
+        return this.entity;
     },
     // Retrives connection object from this.conn or BackboneORM.conn
     getConnection() {
@@ -249,7 +273,7 @@ var extendedCollection = {
     }
 };
 
-BackboneORM.Collection = Backbone.Collection.extend(extendedCollection);
+BackboneORM.Collection = Backbone.Collection.extend(_.extend({}, extended, extendedCollection));
 
 
 BackboneORM.error = function (msg) {
