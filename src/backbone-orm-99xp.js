@@ -69,6 +69,21 @@ var extended = {
 
         return this.entity.sync(migration);
     },
+    defineEntity(definition) {
+        var o,
+            conn = this.getConnection();
+        switch (true) {
+            case _.isArray(definition):
+                o = conn.isDefined(o[0]) ?
+                conn.model(o[0]) :
+                conn.define(o[0], o[1] || {}, o[2] || {})
+                break;
+            case typeof definition === 'function':
+                o = definition.sequelize ? definition : definition();
+                break;
+        }
+        return o;
+    },
 };
 
 // Extended Functionallity for Models and Collections
@@ -79,12 +94,12 @@ var extendedModel = {
     },
     // Load an instance of given class
     setEntity() {
-        var o = _.result(this, 'entityDefinition') || (BackboneORM.error('Entity Definition not found')),
-            conn = this.getConnection();
+        if (this.entity) {
+            return this.entity;
+        }
 
-        this.entity = conn.isDefined(o[0]) ?
-            conn.model(o[0]) :
-            conn.define(o[0], o[1] || {}, o[2] || {});
+        var o = _.result(this, 'entityDefinition') || (BackboneORM.error('Entity Definition not found'));
+        this.entity = this.defineEntity(o);
 
         return this.entity;
     },
@@ -227,10 +242,13 @@ var extendedCollection = {
     },
     // Load an instance of given class
     setEntity() {
-        var o = _.result(this, 'entityDefinition') || _.result(this.modelBase, 'entityDefinition') || BackboneORM.error('Entity Definition not found'),
-            conn = this.getConnection();
+        if (this.entity) {
+            return this.entity;
+        }
 
-        this.entity = conn.isDefined(o[0]) ? conn.model(o[0]) : conn.define(o[0], o[1] || {}, o[2] || {});
+        var o = _.result(this, 'entityDefinition') || _.result(this.modelBase, 'entityDefinition') || BackboneORM.error('Entity Definition not found');
+        this.entity = this.defineEntity(o);
+        
         return this.entity;
     },
     // Retrives connection object from this.conn or BackboneORM.conn
