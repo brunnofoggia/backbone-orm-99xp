@@ -74,9 +74,9 @@ var extended = {
             conn = this.getConnection();
         switch (true) {
             case _.isArray(definition):
-                o = conn.isDefined(o[0]) ?
-                conn.model(o[0]) :
-                conn.define(o[0], o[1] || {}, o[2] || {})
+                o = conn.isDefined(definition[0]) ?
+                    conn.model(definition[0]) :
+                    conn.define(definition[0], definition[1] || {}, definition[2] || {});
                 break;
             case typeof definition === 'function':
                 o = definition.sequelize ? definition : definition();
