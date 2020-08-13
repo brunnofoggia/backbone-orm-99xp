@@ -142,8 +142,7 @@ var extendedModel = {
         // callbacks for success or error. They trigger Backbone default ones
         var success = (r) => {
             var a = {};
-            /*var a = r.dataValues;*/
-            a[model.idAttribute] = r['null'];
+            a[model.idAttribute] = r.dataValues[model.idAttribute];
             o.success(a);
         };
 
