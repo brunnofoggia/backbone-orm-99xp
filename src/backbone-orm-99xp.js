@@ -205,7 +205,7 @@ var extendedModel = {
         if (_.isArray(c1) && _.isArray(c2)) {
             this.once(c1[0], _.partial(function (c1, c2) {
                 this.off(c2[0], c2[1]);
-                
+
                 var args = _.toArray(arguments);
                 args.shift();args.shift();
 
@@ -214,7 +214,7 @@ var extendedModel = {
 
             this.once(c2[0], _.partial(function (c1, c2) {
                 this.off(c1[0], c1[1]);
-        
+
                 var args = _.toArray(arguments);
                 args.shift();args.shift();
 
@@ -223,6 +223,26 @@ var extendedModel = {
         }
 
         return _.bind(Backbone.Model.prototype.once, this)(c1, c2);
+    },
+    save() {
+        return new Promise((resolve, reject) => {
+            this.once(
+                [
+                    'sync',
+                    () => {
+                        resolve(this);
+                    },
+                ],
+                [
+                    'error',
+                    (err) => {
+                        reject(err);
+                    },
+                ]
+            );
+
+            _.bind(Backbone.Model.prototype.save, this)();
+        });
     }
 };
 
@@ -247,7 +267,7 @@ var extendedCollection = {
 
         var o = _.result(this, 'entityDefinition') || _.result(this.modelBase, 'entityDefinition') || BackboneORM.error('Entity Definition not found');
         this.entity = this.defineEntity(o);
-        
+
         return this.entity;
     },
     // Retrives connection object from this.conn or BackboneORM.conn
@@ -255,38 +275,58 @@ var extendedCollection = {
         return _.result(this, 'conn') || _.result(this.modelBase, 'conn') || _.result(BackboneORM, 'conn') || BackboneORM.error('Database connection not set');
     },
     // Transform sequelize rows into models
-    parse(r, sc, ec) {
+    parse(r) {
         if (_.isArray(r) && _.size(r) > 0) {
             this.add(_.map(r, (row) => {
                 return (row.dataValues);
             }));
         }
-
-        sc(this);
     },
     // find all records accordingly to the conditions
-    findAll(where = {}, sc, ec) {
-        typeof ec !== 'function' && (ec = () => { });
-
-        return this.entity.findAll({
-            where: where
-        }).then(r => this.parse(r, sc, ec)).catch(err => ec(err));
+    findAll(where = {}) {
+        return new Promise((resolve, reject) => {
+            return this.entity.findAll({
+                where: where
+            })
+            .then((r) => {
+                this.parse(r);
+                resolve(this);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
     },
     // Save all models
-    saveAll(sc, ec) {
-        var size = this.models.length,
+    saveAll() {
+        return new Promise((resolve, reject) => {
+            var size = this.models.length,
             c = () => {
                 if (--size > 0) { return; }
-                typeof sc === 'function' && sc(this);
+                // resolve after save all models
+                resolve(this);
             };
 
-        typeof ec !== 'function' && (ec = () => { });
+            // validate all models first
+            var errors = [];
+            for (let x in this.models) {
+                var validate = this.models[x].validate(this.model.attributes, {validateAll: true});
+                if (validate) {
+                    errors = errors.concat(validate);
+                }
+            }
+            if (errors.length) {
+                reject(errors);
+            }
 
-        for (var x in this.models) {
-            var m = this.models[x];
-            m.once(['sync', c], ['error', ec]);
-            m.save();
-        }
+            // save each model
+            for (let x in this.models) {
+                var m = this.models[x];
+                m.save().then(()=>c()).catch((err)=>{
+                    reject(err);
+                });
+            }
+        });
     }
 };
 
