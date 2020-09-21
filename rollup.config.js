@@ -9,7 +9,10 @@ const globals = {
   'sequelize': 'Sequelize',
   'underscore-99xp': '_',
   'validate-99xp': 'v',
+  'app-exception': 'AppException',
 };
+
+const externals = ['backbone', 'sequelize', 'v8n-99xp','validate-99xp','underscore-99xp', 'app-exception'];
 
 const now = new Date();
 const year = now.getFullYear();
@@ -31,7 +34,7 @@ const footer = '';
 export default [
   {
     input: 'src/backbone-orm-99xp.js',
-    external: ['backbone', 'sequelize', 'v8n-99xp','validate-99xp','underscore-99xp'],
+    external: externals,
     output: [
       {
         file: 'lib/backbone-orm-99xp.js',
@@ -56,7 +59,7 @@ export default [
   },
   {
     input: 'src/backbone-orm-99xp.js',
-    external: ['backbone', 'sequelize', 'v8n-99xp','validate-99xp','underscore-99xp'],
+    external: externals,
     output: [
       {
         file: 'lib/backbone-orm-99xp.min.js',

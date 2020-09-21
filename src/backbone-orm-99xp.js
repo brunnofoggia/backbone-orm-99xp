@@ -48,6 +48,7 @@
 import _ from 'underscore-99xp';
 import Backbone from 'backbone';
 import v from 'validate-99xp';
+import AppException from 'app-exception';
 
 var BackboneORM = {};
 
@@ -194,10 +195,10 @@ var extendedModel = {
     },
     // Dispatcher of validation errors
     validationErrors(err) {
-        this._res.status(400).send({
+        return BackboneORM.error({
             title: 'Invalid Data',
             errors: err
-        });
+        }, 0, 400);
     },
     // Allows to set a pair of listeners where one turns the other off after being executed.
     // Both parameters are arrays composed like [event, callback]
@@ -333,8 +334,8 @@ var extendedCollection = {
 BackboneORM.Collection = Backbone.Collection.extend(_.extend({}, extended, extendedCollection));
 
 
-BackboneORM.error = function (msg) {
-    throw new Error(msg);
+BackboneORM.error = function (msg, code = 0, status = 500) {
+    throw new AppException(msg, code, status);
 };
 
 export default BackboneORM;

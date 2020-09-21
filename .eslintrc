@@ -43,7 +43,7 @@
     "no-proto": 0,
     "no-script-url": 2,
     "no-sequences": 2,
-    "no-shadow": 2,
+    "no-shadow": 0,
     "no-spaced-func": 2,
     "no-trailing-spaces": 0,
     "no-undef": 0,
