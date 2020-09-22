@@ -1,6 +1,6 @@
 {
   "name": "backbone-orm-99xp",
-  "version": "1.1.0-beta",
+  "version": "1.2.0-beta",
   "keywords": [
     "util",
     "functional",
@@ -56,6 +56,7 @@
   "dependencies": {
     "app-exception": "^1.0.0-2",
     "backbone": "^1.4.0",
+    "backbone-99xp": "github:brunnofoggia/backbone-99xp",
     "sequelize": "^5.22.3",
     "underscore-99xp": "^1.2.2",
     "v8n-99xp": "^1.0.1",

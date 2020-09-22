@@ -47,6 +47,7 @@
 // --------------
 import _ from 'underscore-99xp';
 import Backbone from 'backbone';
+import bbx from 'backbone-99xp';
 import v from 'validate-99xp';
 import AppException from 'app-exception';
 
@@ -136,7 +137,10 @@ var extendedModel = {
         // run select
         return this.entity.findOne({
             where: data
-        }).then(r => success(r)).catch(_.bind(this.handleSyncError, this));
+        }).then(r => {
+            this.formatMe();
+            success(r);
+        }).catch(_.bind(this.handleSyncError, this));
     },
     // Insert row
     syncCreate(method, model, o) {
@@ -148,7 +152,7 @@ var extendedModel = {
         };
 
         // remove pk from attributes that will be updated
-        var attrs = _.omit(this.attributes, this.idAttribute);
+        var attrs = this.unformat(_.omit(_.clone(this.attributes), this.idAttribute));
         // run insert
         return this.entity.create(attrs)
             .then(r => success(r))
@@ -162,7 +166,7 @@ var extendedModel = {
         };
 
         // remove pk from attributes that will be updated
-        var attrs = _.omit(this.attributes, this.idAttribute);
+        var attrs = this.unformat(_.omit(_.clone(this.attributes), this.idAttribute));
         // build where
         var _o = {
             where: _.pick(this.attributes, this.idAttribute)
@@ -242,13 +246,13 @@ var extendedModel = {
                 ]
             );
 
-            _.bind(Backbone.Model.prototype.save, this)();
+            _.bind(bbx.model.prototype.save, this)();
         });
     }
 };
 
 // Extension of Backbone.Model added to custom behaviors
-BackboneORM.Model = Backbone.Model.extend(_.extend(_.clone(v), extended, extendedModel));
+BackboneORM.Model = bbx.model.extend(_.extend(_.clone(v), extended, extendedModel));
 
 var extendedCollection = {
     // Pré set entity into collection instance
@@ -291,6 +295,7 @@ var extendedCollection = {
             })
             .then((r) => {
                 this.parse(r);
+                this.formatModels();
                 resolve(this);
             })
             .catch((err) => {
@@ -331,7 +336,7 @@ var extendedCollection = {
     }
 };
 
-BackboneORM.Collection = Backbone.Collection.extend(_.extend({}, extended, extendedCollection));
+BackboneORM.Collection = bbx.collection.extend(_.extend({}, extended, extendedCollection));
 
 
 BackboneORM.error = function (msg, code = 0, status = 500) {
