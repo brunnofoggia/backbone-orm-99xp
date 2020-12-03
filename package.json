@@ -57,9 +57,6 @@
     "app-exception": "^1.0.0-2",
     "backbone": "^1.4.0",
     "backbone-99xp": "github:brunnofoggia/backbone-99xp",
-    "sequelize": "^5.22.3",
-    "underscore-99xp": "^1.2.2",
-    "v8n-99xp": "^1.0.1",
-    "validate-99xp": "^1.2.0"
+    "sequelize": "^5.22.3"
   }
 }
