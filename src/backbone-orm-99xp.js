@@ -147,6 +147,7 @@ var extendedModel = {
         return this.entity
             .findOne({
                 where: data,
+                order: [[this.idAttribute, "DESC"]],
             })
             .then((r) => {
                 this.formatMe();
