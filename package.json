@@ -1,62 +1,62 @@
 {
-  "name": "backbone-orm-99xp",
-  "version": "1.2.2-alpha",
-  "keywords": [
-    "util",
-    "functional",
-    "server",
-    "client",
-    "browser"
-  ],
-  "license": "MIT",
-  "author": {
-    "name": "Bruno Foggia",
-    "email": "team@99xp.org"
-  },
-  "description": "Backbone ORM is result of fusion between backbone and sequelize to provide a set of functionalities for business model integrateds to ORM",
-  "type": "module",
-  "homepage": "https://backbone-orm.99xp.org",
-  "browser": "lib/backbone-orm-99xp.js",
-  "main": "lib/backbone-orm-99xp.esm.js",
-  "module": "lib/backbone-orm-99xp.esm.js",
-  "jsnext:main": "lib/backbone-orm-99xp.esm.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/brunnofoggia/backbone-orm-99xp.git"
-  },
-  "scripts": {
-    "build": "rollup -c ",
-    "doc": "docco src/backbone-orm-99xp.js -l linear -t ../docco.jst -c ../docco.css",
-    "lint": "eslint src/backbone-orm-99xp.js",
-    "test": "jest",
-    "minify": "terser ./backbone-orm-99xp.js -o ./backbone-orm-99xp.min.js -c -m --source-map \"filename='backbone-orm-99xp.min.js.map'\"",
-    "weight": "npm run minify | gzip-size | pretty-bytes"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "babel-jest": "^26.0.1",
-    "docco": "*",
-    "eslint": "1.10.x",
-    "gzip-size-cli": "^1.0.0",
-    "jest": "^26.0.1",
-    "pretty-bytes-cli": "^1.0.0",
-    "rollup": "1.10.0",
-    "rollup-plugin-babel": "4.3.2",
-    "rollup-plugin-browsersync": "1.0.0",
-    "rollup-plugin-commonjs": "9.3.4",
-    "rollup-plugin-eslint": "5.1.0",
-    "rollup-plugin-json": "4.0.0",
-    "rollup-plugin-multi-entry": "2.1.0",
-    "rollup-plugin-node-globals": "1.4.0",
-    "rollup-plugin-node-resolve": "4.2.3",
-    "rollup-plugin-terser": "4.0.4",
-    "terser": "^4.6.11"
-  },
-  "dependencies": {
-    "app-exception": "^1.0.0-2",
-    "backbone": "^1.4.0",
-    "backbone-99xp": "github:brunnofoggia/backbone-99xp",
-    "sequelize": "^5.22.3"
-  }
+    "name": "backbone-orm-99xp",
+    "version": "1.2.3-alpha",
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser"
+    ],
+    "license": "MIT",
+    "author": {
+        "name": "Bruno Foggia",
+        "email": "team@99xp.org"
+    },
+    "description": "Backbone ORM is result of fusion between backbone and sequelize to provide a set of functionalities for business model integrateds to ORM",
+    "type": "module",
+    "homepage": "https://backbone-orm.99xp.org",
+    "browser": "lib/backbone-orm-99xp.js",
+    "main": "lib/backbone-orm-99xp.esm.js",
+    "module": "lib/backbone-orm-99xp.esm.js",
+    "jsnext:main": "lib/backbone-orm-99xp.esm.js",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/brunnofoggia/backbone-orm-99xp.git"
+    },
+    "scripts": {
+        "build": "rollup -c ",
+        "doc": "docco src/backbone-orm-99xp.js -l linear -t ../docco.jst -c ../docco.css",
+        "lint": "eslint src/backbone-orm-99xp.js",
+        "test": "jest",
+        "minify": "terser ./backbone-orm-99xp.js -o ./backbone-orm-99xp.min.js -c -m --source-map \"filename='backbone-orm-99xp.min.js.map'\"",
+        "weight": "npm run minify | gzip-size | pretty-bytes"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.3",
+        "@babel/preset-env": "^7.4.3",
+        "babel-jest": "^26.0.1",
+        "docco": "*",
+        "eslint": "1.10.x",
+        "gzip-size-cli": "^1.0.0",
+        "jest": "^26.0.1",
+        "pretty-bytes-cli": "^1.0.0",
+        "rollup": "1.10.0",
+        "rollup-plugin-babel": "4.3.2",
+        "rollup-plugin-browsersync": "1.0.0",
+        "rollup-plugin-commonjs": "9.3.4",
+        "rollup-plugin-eslint": "5.1.0",
+        "rollup-plugin-json": "4.0.0",
+        "rollup-plugin-multi-entry": "2.1.0",
+        "rollup-plugin-node-globals": "1.4.0",
+        "rollup-plugin-node-resolve": "4.2.3",
+        "rollup-plugin-terser": "4.0.4",
+        "terser": "^4.6.11"
+    },
+    "dependencies": {
+        "app-exception": "^1.0.0-2",
+        "backbone": "^1.4.0",
+        "backbone-99xp": "github:brunnofoggia/backbone-99xp",
+        "sequelize": "^5.22.3"
+    }
 }
